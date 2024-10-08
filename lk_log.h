@@ -2,13 +2,14 @@
 #define __LK_LOG_H__
 
 #include <stdint.h>
+#include <stdio.h>
 
 /**
  * @brief 自定义配置
  *
  */
 #ifndef LOG_LEVEL
-#define LOG_LEVEL      LOG_VERBOSE                 // log等级，0关闭所有log
+#define LOG_LEVEL LOG_VERBOSE // log等级，0关闭所有log
 #endif
 
 #define LOG_TIME_STAMP (rt_tick_get_millisecond()) // 时间戳
@@ -17,6 +18,9 @@
 // #define LOG_FUNC __FUNCTION__
 #define LOG_LINE __LINE__
 #define LOG_END  "\r\n"
+
+#define dump_print     printf
+#define __is_print(ch) ((unsigned int)((ch) - ' ') < 127u - ' ')
 
 /**
  * @brief Log字符
@@ -68,6 +72,38 @@
 #define LOG_V(fmt, ...) \
     logFmt(VERBOSE_TEXT, LOG_VERBOSE, fmt, ##__VA_ARGS__)
 
-// void bsp_log_dump(const char *buf, uint32_t size, uint32_t number);
+/**
+ * @brief 16进制打印数据
+ *
+ * @param buf 数据区
+ * @param size 数据区大小
+ * @param number 每行输出数据的数量
+ */
+static void LOG_HEX(const char *buf, uint32_t size, uint32_t number) {
+    for (uint32_t i = 0; i < size; i += number) {
+        dump_print("%08X: ", i);
+
+        for (uint32_t j = 0; j < number; j++) {
+            if (j % 8 == 0) {
+                dump_print(" ");
+            }
+
+            if (i + j < size)
+                dump_print("%02X ", buf[i + j]);
+            else
+                dump_print("   ");
+        }
+
+        dump_print(" ");
+
+        for (uint32_t j = 0; j < number; j++) {
+            if (i + j < size) {
+                dump_print("%c", __is_print(buf[i + j]) ? buf[i + j] : '.');
+            }
+        }
+
+        dump_print("\r\n");
+    }
+}
 
 #endif /* __LK_LOG_H__ */

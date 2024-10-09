@@ -109,6 +109,22 @@ static void LK_LOG_HEX(const char *buf, uint32_t size, uint32_t number) {
 #endif
 
 // ASS
+#ifdef LOG_E
+#undef LOG_E
+#endif
+#ifdef LOG_W
+#undef LOG_W
+#endif
+#ifdef LOG_I
+#undef LOG_I
+#endif
+#ifdef LOG_D
+#undef LOG_D
+#endif
+#ifdef LOG_V
+#undef LOG_V
+#endif
+
 #define LOG_E LK_LOG_E
 #define LOG_W LK_LOG_W
 #define LOG_I LK_LOG_I
